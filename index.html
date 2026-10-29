@@ -5459,7 +5459,9 @@ function tabMagia(hr) {
   const porNivel = {};
   lista.forEach(id => { const n = CONJUROS[conjuroBase(id)].nivel; (porNivel[n] = porNivel[n] || []).push(id); });
   const pergaminos = hr.inventario.filter(i => OBJETOS[i.id] && ['pergamino', 'varita'].includes(OBJETOS[i.id].tipo));
+  if (!lista.length && !pergaminos.length) return h('p', { class: 'nota' }, 'Tu clase no lanza conjuros. Aquí aparecerán los pergaminos y varitas que encuentres.');
   return h('div', { class: 'magia' },
+    estado.modo !== 'dm' && lista.some(id => CONJUROS[conjuroBase(id)].modo === 'narrativo') ? h('p', { class: 'nota' }, 'Los conjuros de utilidad solo tienen efecto en una campaña con DM.') : null,
     carLanzamiento(hr) ? h('div', { class: 'ficha-bloques' }, bloqueDato('CD de conjuros', cdConjuro(hr)), bloqueDato('Ataque de conjuro', signo(bonoAtaqueConjuro(hr))), bloqueDato('Característica', ABREV_CAR[carLanzamiento(hr)])) : null,
     tot.some(n => n) ? h('div', { class: 'espacios' }, tot.map((n, i) => n ? h('div', { class: 'espacio-nivel' }, h('span', { class: 'etq' }, `Nivel ${i + 1}`), h('span', { class: 'pips' }, Array.from({ length: n }, (_, k) => h('i', { class: k < lib[i] ? 'lleno' : 'vacio' })))) : null)) : null,
     conc ? h('p', { class: 'nota' }, 'Concentrándote en: ', h('b', null, CONJUROS[conc.conjuro].nombre)) : null,
@@ -5470,7 +5472,7 @@ function tabMagia(hr) {
       h('ul', { class: 'lista-conjuros' }, porNivel[n].map(id => {
         const info = infoLanzamiento(id, false);
         const cj = info.cj;
-        const lanzable = fuera && !info.motivo && info.niveles.length;
+        const lanzable = fuera && !info.motivo && info.niveles.length && !(cj.modo === 'narrativo' && estado.modo !== 'dm');
         return h('li', null,
           h('details', null, h('summary', null, h('b', null, cj.nombre), h('small', null, [ { accion: 'Acción', adicional: 'Adicional', reaccion: 'Reacción' }[cj.tiempo], cj.concentracion ? 'Concentración' : null, cj.ritual ? 'Ritual' : null, id.endsWith('@raza') ? 'Legado tiefling' : null].filter(Boolean).join(' · '))), h('p', null, cj.desc)),
           lanzable && !cj.pasivo ? h('button', { class: 'btn btn-mini', onclick: () => lanzarFueraCombate(id, info) }, cj.ritual && ['mago', 'clerigo'].includes(hr.clase) ? 'Ritual' : 'Lanzar') : null);
