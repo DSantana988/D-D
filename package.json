@@ -1,0 +1,12 @@
+{
+  "name": "dados-y-dragones",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Juego de rol de fantasía en solitario con reglas de 5.ª edición, combate táctico y Claude como Dungeon Master.",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node build.mjs && node tests/motor.test.mjs && node tests/e2e.mjs && node tests/e2e-dm.mjs && node tests/e2e-magia.mjs",
+    "test:motor": "node tests/motor.test.mjs"
+  }
+}
